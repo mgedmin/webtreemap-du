@@ -19,6 +19,3 @@ conveniently available as a git submodule; after cloning webtreemap-du run
     git submodule init
     git submodule update
 
-Experiment 1: visualising disk usage in an HTML page.
-
-
