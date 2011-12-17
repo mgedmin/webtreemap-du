@@ -8,6 +8,7 @@ Usage: du /path | du2webtreemap.py > du.js
 
 import sys
 import json
+import optparse
 import fileinput
 from collections import defaultdict
 
@@ -18,7 +19,7 @@ def fmt_size(kb):
         if kb < 1024:
             break
         kb /= 1024.0
-    return '%.0f %s' % (kb, units)
+    return '%.1f %s' % (kb, units)
 
 
 class TreeNode(object):
@@ -38,7 +39,9 @@ class TreeNode(object):
             },
             children=[
                 child.as_json(name or "/")
-                for name, child in sorted(self.children.items())
+                for name, child in sorted(self.children.items(),
+                                          key=lambda (n, c): c.size,
+                                          reverse=True)
             ],
         )
 
@@ -78,11 +81,22 @@ def parse_du(input):
 
 
 def main():
-    if len(sys.argv) == 1 and sys.stdin.isatty() or '--help' in sys.argv:
-        sys.exit(__doc__)
-    tree = parse_du(fileinput.input())
+    parser = optparse.OptionParser(
+        usage='%prog [options] < input.txt > output.js')
+    parser.add_option('-p', '--pretty-print', action='store_true', 
+                      help='pretty-print the output')
+    parser.add_option('-d', '--dot-name', metavar='NEWNAME',
+                      help='rename the root node, if it is "."')
+    opts, args = parser.parse_args()
+    if not args and sys.stdin.isatty():
+        parser.print_help()
+        return
+    tree = parse_du(fileinput.input(args))
+    if opts.dot_name and list(tree.children) == ['.']:
+        tree.children = {opts.dot_name: tree.children['.']}
     sys.stdout.write("var tree = ")
-    json.dump(tree.as_json('disk usage (kilobytes)'), sys.stdout, indent=2)
+    json.dump(tree.as_json('disk usage (kilobytes)'), sys.stdout,
+              indent=2 if opts.pretty_print else 0)
 
 
 if __name__ == '__main__':
