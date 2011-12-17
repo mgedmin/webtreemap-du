@@ -28,14 +28,18 @@ class TreeNode(object):
         self.size = None
         self.children = defaultdict(TreeNode)
 
+    def get_size(self):
+        if self.size is not None:
+            return self.size
+        else:
+            return sum(child.get_size() for child in self.children.values())
+
     def as_json(self, name):
         return dict(
             name='%s %s' % (name, fmt_size(self.size)) if self.size is not None
                  else name,
             data={
-                "$area": self.size if self.size is not None
-                         else sum(child.size
-                                  for child in self.children.values()),
+                "$area": self.get_size(),
             },
             children=[
                 child.as_json(name or "/")
@@ -94,8 +98,16 @@ def main():
     tree = parse_du(fileinput.input(args))
     if opts.dot_name and list(tree.children) == ['.']:
         tree.children = {opts.dot_name: tree.children['.']}
+
+    if len(tree.children) == 1:
+        name, root = tree.children.items()[0]
+        json_data = root.as_json(name or '/')
+    else:
+        json_data = tree.as_json('total disk usage %s'
+                                 % fmt_size(tree.get_size()))
+
     sys.stdout.write("var tree = ")
-    json.dump(tree.as_json('disk usage (kilobytes)'), sys.stdout,
+    json.dump(json_data, sys.stdout,
               indent=2 if opts.pretty_print else 0)
 
 
