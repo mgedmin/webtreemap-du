@@ -16,6 +16,5 @@ Or run ./demo.sh to see something quick and local.
 You'll need webtreemap (https://github.com/martine/webtreemap), which is
 conveniently available as a git submodule; after cloning webtreemap-du run
 
-    git submodule init
-    git submodule update
+    git submodule update --init
 
