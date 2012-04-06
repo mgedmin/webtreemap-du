@@ -109,7 +109,7 @@ def main():
     sys.stdout.write("var tree = ")
     json.dump(json_data, sys.stdout,
               indent=2 if opts.pretty_print else 0)
-    print >> sys.stdout # put a trailing newline in there
+    sys.stdout.write("\n") # put a trailing newline in there
 
 
 if __name__ == '__main__':
