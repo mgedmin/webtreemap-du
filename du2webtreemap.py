@@ -4,6 +4,7 @@ Convert disk usage numbers produced by 'du' to webtreemap data suitable for
 https://github.com/martine/webtreemap
 
 Usage: du /path | du2webtreemap.py > du.js
+  or   du /path | du2webtreemap.py --html > du.html; firefox du.html
 """
 
 import sys
@@ -11,6 +12,7 @@ import json
 import optparse
 import fileinput
 from collections import defaultdict
+from functools import partial
 
 
 def fmt_size(kb):
@@ -84,13 +86,57 @@ def parse_du(input):
     return root
 
 
+HTML_TEMPLATE = """\
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Disk Usage</title>
+    <link rel="stylesheet" href="webtreemap/webtreemap.css" />
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 0.8em;
+        margin: 2ex 4ex;
+      }
+
+      h1 {
+        font-weight: normal;
+      }
+
+      #map {
+        width: 800px;
+        height: 480px;
+        position: relative;
+        cursor: pointer;
+        -webkit-user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Disk Usage</h1>
+    <p>Click on a box to zoom in.  Click on the outermost box to zoom out.</p>
+    <div id="map"></div>
+    <script src="webtreemap/webtreemap.js"></script>
+    <script>
+      %(data)s
+      var map = document.getElementById('map');
+      appendTreemap(map, tree);
+    </script>
+  </body>
+</html>
+"""
+
+
 def main():
     parser = optparse.OptionParser(
-        usage='%prog [options] < input.txt > output.js')
-    parser.add_option('-p', '--pretty-print', action='store_true', 
+        usage='%prog [options] < input.txt > output.js\n'
+              '       %prog --html [options] < input.txt > output.html')
+    parser.add_option('-p', '--pretty-print', action='store_true',
                       help='pretty-print the output')
     parser.add_option('-d', '--dot-name', metavar='NEWNAME',
                       help='rename the root node, if it is "."')
+    parser.add_option('--html', action='store_true',
+                      help='output HTML with embedded JSON')
     opts, args = parser.parse_args()
     if not args and sys.stdin.isatty():
         parser.print_help()
@@ -106,10 +152,17 @@ def main():
         json_data = tree.as_json('total disk usage %s'
                                  % fmt_size(tree.get_size()))
 
-    sys.stdout.write("var tree = ")
-    json.dump(json_data, sys.stdout,
-              indent=2 if opts.pretty_print else 0)
-    sys.stdout.write("\n") # put a trailing newline in there
+    if opts.pretty_print:
+        format_json = partial(json.dumps, indent=2, sort_keys=True,
+                              separators=(',', ': '))
+    else:
+        format_json = json.dumps
+
+    data = "var tree = %s" % format_json(json_data)
+    if opts.html:
+        print HTML_TEMPLATE % dict(data=data)
+    else:
+        print(data)
 
 
 if __name__ == '__main__':

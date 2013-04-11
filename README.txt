@@ -8,7 +8,7 @@ for something more visual.
 Enter du2webtreemap!
 
     ssh someserver du /path/to/somewhere > du.txt
-    du2webtreemap < du.txt > du.js
+    du2webtreemap --html < du.txt > du.html
     xdg-open ./du.html
 
 Or run ./demo.sh to see something quick and local.
