@@ -15,6 +15,10 @@ from collections import defaultdict
 from functools import partial
 
 
+__author__ = 'Marius Gedminas <marius@gedmin.as>'
+__version__ = '1.0.1'
+
+
 def fmt_size(kb):
     units = 'KiB'
     for units in 'KiB', 'MiB', 'GiB', 'TiB':
@@ -75,7 +79,7 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
-        filename = filename.rstrip()
+        filename = filename.rstrip('\r\n\t /')
         # Process
         node = root
         for part in filename.split('/'):
