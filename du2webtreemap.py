@@ -48,7 +48,7 @@ class TreeNode(object):
                 "$area": self.get_size(),
             },
             children=[
-                child.as_json(name or "/")
+                child.as_json(name.decode('UTF-8', errors='replace') or "/")
                 for name, child in sorted(self.children.items(),
                                           key=lambda (n, c): c.size,
                                           reverse=True)
