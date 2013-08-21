@@ -16,7 +16,7 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 def fmt_size(kb):
@@ -79,7 +79,7 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
-        filename = filename.rstrip('\r\n\t /')
+        filename = filename.rstrip('\r\n/')
         # Process
         node = root
         for part in filename.split('/'):
