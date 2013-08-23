@@ -16,7 +16,7 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 def fmt_size(kb):
@@ -48,7 +48,7 @@ class TreeNode(object):
                 "$area": self.get_size(),
             },
             children=[
-                child.as_json(name.decode('UTF-8', errors='replace') or "/")
+                child.as_json(name.decode('UTF-8', 'replace') or "/")
                 for name, child in sorted(self.children.items(),
                                           key=lambda (n, c): c.size,
                                           reverse=True)
