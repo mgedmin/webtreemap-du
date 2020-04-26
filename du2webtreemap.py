@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Convert disk usage numbers produced by 'du' to webtreemap data suitable for
 https://github.com/martine/webtreemap
@@ -16,7 +16,7 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '1.0.3'
+__version__ = '2.0.0'
 
 
 def fmt_size(kb):
@@ -30,15 +30,19 @@ def fmt_size(kb):
 
 class TreeNode(object):
 
+    size = None
+    _computed_size = None
+
     def __init__(self):
-        self.size = None
         self.children = defaultdict(TreeNode)
 
     def get_size(self):
         if self.size is not None:
             return self.size
-        else:
-            return sum(child.get_size() for child in self.children.values())
+        if self._computed_size is None:
+            self._computed_size = sum(child.get_size()
+                                      for child in self.children.values())
+        return self._computed_size
 
     def as_json(self, name):
         return dict(
@@ -48,10 +52,10 @@ class TreeNode(object):
                 "$area": self.get_size(),
             },
             children=[
-                child.as_json(name.decode('UTF-8', 'replace') or "/")
-                for name, child in sorted(self.children.items(),
-                                          key=lambda (n, c): c.size,
-                                          reverse=True)
+                child.as_json(name or "/")
+                for name, child in sorted(
+                    self.children.items(),
+                    key=lambda nc: (-nc[1].get_size(), nc[0]))
             ],
         )
 
@@ -79,13 +83,16 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
+        if not isinstance(filename, str):
+            filename = filename.decode('UTF-8', 'replace')
         filename = filename.rstrip('\r\n/')
         # Process
         node = root
         for part in filename.split('/'):
             node = node.children[part]
         if node.size is not None:
-            raise InputSyntaxError('size of %s was already specified previously' % filename)
+            raise InputSyntaxError(
+                'size of %s was already specified previously' % filename)
         node.size = size
     return root
 
@@ -150,7 +157,7 @@ def main():
         tree.children = {opts.dot_name: tree.children['.']}
 
     if len(tree.children) == 1:
-        name, root = tree.children.items()[0]
+        [(name, root)] = tree.children.items()
         json_data = root.as_json(name or '/')
     else:
         json_data = tree.as_json('total disk usage %s'
@@ -162,9 +169,9 @@ def main():
     else:
         format_json = json.dumps
 
-    data = "var tree = %s" % format_json(json_data)
+    data = "var tree = %s;" % format_json(json_data)
     if opts.html:
-        print HTML_TEMPLATE % dict(data=data)
+        print(HTML_TEMPLATE % dict(data=data))
     else:
         print(data)
 

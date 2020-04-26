@@ -1,5 +1,5 @@
 #!/bin/sh
-du . | python du2webtreemap.py -d 'webtreemap-du' -p --html > du.html
+du . | python3 du2webtreemap.py -d 'webtreemap-du' -p --html > du.html
 if ! [ -f webtreemap/webtreemap.js ]; then
     echo 'Fetching webtreemap...'
     git submodule update --init
