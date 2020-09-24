@@ -13,8 +13,13 @@ Enter du2webtreemap!
 
 Or run ./demo.sh to see something quick and local.
 
-You'll need webtreemap (https://github.com/martine/webtreemap), which is
-conveniently available as a git submodule; after cloning webtreemap-du run
+This is based on webtreemap (https://github.com/martine/webtreemap), which was
+conveniently imported as a git subtree via
 
-    git submodule update --init
+    git subtree add --prefix=webtreemap https://github.com/martine/webtreemap 7839cf91548943a16a75d0483cce0be839a281ab
 
+I'm a bit new to git subtrees.  I think you can update with
+
+    git subtree pull --prefix=webtreemap https://github.com/martine/webtreemap master
+
+(but beware: newer commits of webtreemap don't have the webtreemap.js, you have to use webpack to generate it somehow)
