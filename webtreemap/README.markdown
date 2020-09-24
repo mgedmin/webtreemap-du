@@ -5,7 +5,7 @@ styling and transitions) rather than a big canvas/svg/plugin.
 
 Play with a [demo][].
 
-[demo]: http://martine.github.com/webtreemap/demo/demo.html
+[demo]: http://evmar.github.io/webtreemap/demo/demo.html
 
 ## Creating your own
 
@@ -39,6 +39,12 @@ The `$area` of a node should be the sum of the `$area` of all of its
 (At runtime, tree nodes will dynamically will gain two extra
 attributes, `parent` and `dom`; this is only worth pointing out so
 that you don't accidentally conflict with them.)
+
+By default, appendTreemap will sort the tree's children from largest
+to smallest before placement. To retain the input order, pass an options
+argument to appendTreemap:
+
+        appendTreemap(document.getElementById('mynode'), mydata, {sort: false})
 
 ### CSS styling
 

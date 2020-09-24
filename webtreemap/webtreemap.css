@@ -6,15 +6,51 @@
   border: solid 1px black;  /* Calculations assume 1px border. */
 
   /* Optional: CSS animation. */
-  -webkit-transition: top    0.3s,
-                      left   0.3s,
-                      width  0.3s,
-                      height 0.3s;
+  transition: top    0.3s,
+              left   0.3s,
+              width  0.3s,
+              height 0.3s;
 }
 
 /* Optional: highlight nodes on mouseover. */
 .webtreemap-node:hover {
   background: #eee;
+}
+
+/* Optional: Different background colors depending on symbol. */
+.webtreemap-symbol-bss {
+  background: #66C2A5;
+}
+.webtreemap-symbol-data {
+  background: #FC8D62;
+}
+.webtreemap-symbol-read-only_data {
+  background: #8DA0CB;
+}
+.webtreemap-symbol-code {
+  background: #E78AC3;
+}
+.webtreemap-symbol-weak_symbol {
+  background: #A6D854;
+}
+.webtreemap-symbol-bss.webtreemap-aggregate {
+  background: #B3E2CD;
+}
+.webtreemap-symbol-data.webtreemap-aggregate {
+  background: #FDCDAC;
+}
+.webtreemap-symbol-read-only_data.webtreemap-aggregate {
+  background: #CBD5E8;
+}
+.webtreemap-symbol-code.webtreemap-aggregate {
+  background: #F4CAE4;
+}
+.webtreemap-symbol-weak_symbol.webtreemap-aggregate {
+  background: #E6F5C9;
+}
+
+#legend > * {
+  border: solid 1px #444;
 }
 
 /* Optional: Different borders depending on level. */
