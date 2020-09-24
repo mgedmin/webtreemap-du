@@ -1,4 +1,4 @@
-Visualize disk usage with webtreemap
+## Visualize disk usage with webtreemap
 
 There are plenty of graphical tools to do this (e.g. Baobab, KFileLight),
 but they are typically slow and/or inconvenient (consider a GUI-less server).
@@ -13,13 +13,13 @@ Enter du2webtreemap!
 
 Or run ./demo.sh to see something quick and local.
 
+These days I mostly webtreemap-du this via
+https://github.com/ProgrammersOfVilnius/pov-server-page rather than directly.
+
 This is based on webtreemap (https://github.com/martine/webtreemap), which was
 conveniently imported as a git subtree via
 
-    git subtree add --prefix=webtreemap https://github.com/martine/webtreemap 7839cf91548943a16a75d0483cce0be839a281ab
+    git subtree add --prefix=webtreemap https://github.com/martine/webtreemap v1
 
-I'm a bit new to git subtrees.  I think you can update with
-
-    git subtree pull --prefix=webtreemap https://github.com/martine/webtreemap master
-
-(but beware: newer commits of webtreemap don't have the webtreemap.js, you have to use webpack to generate it somehow)
+Note: webtreemap master is a full rewrite with a different API and a divergent
+commit history.  Updating to use it will be fun!
