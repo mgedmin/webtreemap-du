@@ -1,2 +1,10 @@
-du.js
+*.egg-info/
+*.py[co]
+.coverage
+.coverage.*
+.tox/
+__pycache__/
+build/
+dist/
 du.html
+du.js

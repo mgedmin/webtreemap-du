@@ -1,0 +1,7 @@
+[run]
+source = du2webtreemap
+
+[report]
+exclude_lines =
+    pragma: nocover
+    if __name__ == .__main__.:
