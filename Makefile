@@ -2,4 +2,4 @@ test:
 	tox -p auto
 
 coverage:
-	tox -e coverage
+	tox -e coverage,coverage2

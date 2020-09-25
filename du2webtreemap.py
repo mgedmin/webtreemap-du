@@ -16,7 +16,7 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 
 def fmt_size(kb):
@@ -83,7 +83,7 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
-        if not isinstance(filename, str):
+        if isinstance(filename, bytes):  # pragma: PY2
             filename = filename.decode('UTF-8', 'replace')
         filename = filename.rstrip('\r\n/')
         # Process
@@ -151,7 +151,7 @@ def main():
     opts, args = parser.parse_args()
     if not args and sys.stdin.isatty():
         parser.print_help()
-        return
+        sys.exit(0)
     tree = parse_du(fileinput.input(args))
     if opts.dot_name and list(tree.children) == ['.']:
         tree.children = {opts.dot_name: tree.children['.']}
