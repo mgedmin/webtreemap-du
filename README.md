@@ -1,5 +1,7 @@
 ## Visualize disk usage with webtreemap
 
+[![Build Status](https://travis-ci.com/mgedmin/webtreemap-du.svg?branch=master)](https://travis-ci.com/mgedmin/webtreemap-du)
+
 There are plenty of graphical tools to do this (e.g. Baobab, KFileLight),
 but they are typically slow and/or inconvenient (consider a GUI-less server).
 I often find myself running du on the command line (over ssh) and wishing
