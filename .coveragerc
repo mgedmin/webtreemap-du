@@ -1,9 +1,8 @@
 [run]
 source = du2webtreemap
-plugins =
-    coverage_python_version
 
 [report]
 exclude_lines =
+    pragma: PY2
     pragma: nocover
     if __name__ == .__main__.:
