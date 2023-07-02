@@ -3,6 +3,5 @@ source = du2webtreemap
 
 [report]
 exclude_lines =
-    pragma: PY2
     pragma: nocover
     if __name__ == .__main__.:

@@ -16,7 +16,7 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '2.0.1'
+__version__ = '2.1.0'
 
 
 def fmt_size(kb):
@@ -83,8 +83,6 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
-        if isinstance(filename, bytes):  # pragma: PY2
-            filename = filename.decode('UTF-8', 'replace')
         filename = filename.rstrip('\r\n/')
         # Process
         node = root
