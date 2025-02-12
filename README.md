@@ -1,6 +1,6 @@
 ## Visualize disk usage with webtreemap
 
-[![Build Status](https://github.com/mgedmin/webtreemap-du/workflows/build/badge.svg?branch=master)](https://github.com/mgedmin/webtreemap-du/actions)
+[![Build Status](https://github.com/mgedmin/webtreemap-du/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/mgedmin/webtreemap-du/actions/workflows/build.yml)
 
 There are plenty of graphical tools to do this (e.g. Baobab, KFileLight),
 but they are typically slow and/or inconvenient (consider a GUI-less server).
