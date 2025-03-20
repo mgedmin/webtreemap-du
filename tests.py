@@ -1,6 +1,6 @@
 import json
 import sys
-from io import StringIO
+from io import BytesIO, TextIOWrapper
 
 import pytest
 
@@ -69,10 +69,10 @@ def test_TreeNode_with_children():
 
 def test_parse_du():
     root = dw.parse_du([
-        '11 ./foo/a\n',
-        '42 ./foo\n',
-        '17 ./bar\n',
-        '63 .\n',
+        b'11 ./foo/a\n',
+        b'42 ./foo\n',
+        b'17 ./bar\n',
+        b'63 .\n',
     ])
     assert root.get_size() == 63
     assert sorted(root.children) == ['.']
@@ -80,12 +80,24 @@ def test_parse_du():
     assert sorted(root.children['.'].children['foo'].children) == ['a']
 
 
+def test_parse_du_not_utf_8():
+    root = dw.parse_du([
+        b'11 ./foo/\xff\n',
+        b'42 ./foo\n',
+        b'17 ./bar\n',
+        b'63 .\n',
+    ])
+    assert root.get_size() == 63
+    assert sorted(root.children) == ['.']
+    assert sorted(root.children['.'].children['foo'].children) == ['\uFFFD']
+
+
 def test_parse_root_relative():
     root = dw.parse_du([
-        '11 /foo/a\n',
-        '42 /foo\n',
-        '17 /bar\n',
-        '63 /\n',
+        b'11 /foo/a\n',
+        b'42 /foo\n',
+        b'17 /bar\n',
+        b'63 /\n',
     ])
     assert root.get_size() == 63
     # TBH I'm not sure this is right; maybe I should insist on /
@@ -95,9 +107,9 @@ def test_parse_root_relative():
 
 
 @pytest.mark.parametrize('input', [
-    ['this-is-not-du-output\n'],
-    ['this is not du output\n'],
-    ['42 here\n', '43 there\n', '5 here\n'],
+    [b'this-is-not-du-output\n'],
+    [b'this is not du output\n'],
+    [b'42 here\n', b'43 there\n', b'5 here\n'],
 ])
 def test_parse_du_errors(input):
     with pytest.raises(dw.InputSyntaxError):
@@ -117,9 +129,13 @@ def test_main_help_when_no_args_and_a_tty(monkeypatch):
         dw.main()
 
 
+def MockStdin(data):
+    return TextIOWrapper(BytesIO(data.encode()))
+
+
 def test_main(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 foo\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 foo\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('var tree = {')
@@ -134,7 +150,7 @@ def test_main(monkeypatch, capsys):
 
 def test_main_pretty_print(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap', '-p'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 foo\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 foo\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('var tree = {')
@@ -149,7 +165,7 @@ def test_main_pretty_print(monkeypatch, capsys):
 
 def test_main_html(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap', '--html'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 foo\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 foo\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('<!DOCTYPE')
@@ -157,7 +173,7 @@ def test_main_html(monkeypatch, capsys):
 
 def test_main_dot_name(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap', '-d', '/var'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 ./foo\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 ./foo\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('var tree = {')
@@ -177,7 +193,7 @@ def test_main_dot_name(monkeypatch, capsys):
 
 def test_main_multiple_top_levels(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 foo\n11 bar\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 foo\n11 bar\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('var tree = {')
@@ -202,7 +218,7 @@ def test_main_multiple_top_levels(monkeypatch, capsys):
 
 def test_main_nonascii(monkeypatch, capsys):
     monkeypatch.setattr(sys, 'argv', ['du2webtreemap'])
-    monkeypatch.setattr(sys, 'stdin', StringIO("42 fø\n"))
+    monkeypatch.setattr(sys, 'stdin', MockStdin("42 fø\n"))
     dw.main()
     output = capsys.readouterr().out
     assert output.startswith('var tree = {')

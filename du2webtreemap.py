@@ -16,7 +16,8 @@ from functools import partial
 
 
 __author__ = 'Marius Gedminas <marius@gedmin.as>'
-__version__ = '2.1.0'
+__version__ = '2.1.1'
+__date__ = '2025-03-20'
 
 
 def fmt_size(kb):
@@ -67,10 +68,10 @@ class InputSyntaxError(Exception):
 def parse_du(input):
     """Parse a sequence of lines from 'du'.
 
-    Input format: a sequence of lines; each line has a numerical size
-    (kilobytes, but we don't care, as long as the units are the same),
-    some whitespace, and the directory name.  Subdirectories appear before
-    parent directories.
+    Input format: a sequence of lines (as byte strings); each line has a
+    numerical size (kilobytes, but we don't care, as long as the units are the
+    same), some whitespace, and the directory name.  Subdirectories appear
+    before parent directories.
     """
     root = TreeNode()
     for line in input:
@@ -83,6 +84,7 @@ def parse_du(input):
             size = int(size)
         except ValueError:
             raise InputSyntaxError('size is not a number: %r' % size)
+        filename = filename.decode('UTF-8', 'replace')
         filename = filename.rstrip('\r\n/')
         # Process
         node = root
@@ -150,7 +152,7 @@ def main():
     if not args and sys.stdin.isatty():
         parser.print_help()
         sys.exit(0)
-    tree = parse_du(fileinput.input(args))
+    tree = parse_du(fileinput.input(args, mode='rb'))
     if opts.dot_name and list(tree.children) == ['.']:
         tree.children = {opts.dot_name: tree.children['.']}
 
