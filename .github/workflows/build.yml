@@ -36,6 +36,8 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           cache: pip
+          cache-dependency-path: |
+            tox.ini
 
       - name: Install dependencies
         run: |
